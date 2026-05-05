@@ -62,6 +62,7 @@ export const DAY_LABELS = {
 export function useSchedule(fetchFn) {
   const schedule = ref({})
   const loading  = ref(false)
+  const error    = ref('')
 
   /**
    * Only days that have at least one scheduled slot are shown in the timetable.
@@ -113,15 +114,17 @@ export function useSchedule(fetchFn) {
    */
   async function load() {
     loading.value = true
+    error.value   = ''
     try {
       const res      = await fetchFn()
       schedule.value = res.data ?? {}
     } catch (e) {
       console.error('[useSchedule] Failed to load schedule:', e)
+      error.value = e.message || 'Failed to load schedule.'
     } finally {
       loading.value = false
     }
   }
 
-  return { schedule, loading, activeDays, sortedSlots, slotStyle, fmt, load }
+  return { schedule, loading, error, activeDays, sortedSlots, slotStyle, fmt, load }
 }
