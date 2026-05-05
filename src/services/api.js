@@ -11,8 +11,16 @@
  *     message comes from the API's { message } field when available
  */
 
-const BASE_URL   = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-let   csrfLoaded = false
+if (!import.meta.env.VITE_API_URL && import.meta.env.PROD) {
+  console.warn('[api] VITE_API_URL is not set — falling back to localhost:8000. This will not work in production.')
+}
+
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+// Re-fetch the CSRF cookie after 30 min of idle time so stale sessions don't
+// silently break state-mutating requests (cookie expires with the session).
+let csrfLoadedAt  = 0
+const CSRF_TTL_MS = 30 * 60 * 1000
 
 // ─────────────────────────────────────────────
 // Internal helpers
@@ -56,14 +64,14 @@ export async function apiFetch(path, options = {}) {
   // We guard with csrfLoaded so this only happens once per page session.
   // The fetch is wrapped in try/catch so a CORS failure here is non-fatal —
   // the main request will still fire and fail with a proper error if needed.
-  if (!csrfLoaded) {
+  if (Date.now() - csrfLoadedAt > CSRF_TTL_MS) {
     try {
       await fetch(`${BASE_URL}/sanctum/csrf-cookie`, { credentials: 'include' })
+      csrfLoadedAt = Date.now()
     } catch {
       // Network or CORS error on the CSRF call — proceed anyway.
       // The subsequent API request will surface the real problem.
     }
-    csrfLoaded = true
   }
 
   // ── Header construction ─────────────────────────────────────────────────────
