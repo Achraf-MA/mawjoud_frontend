@@ -87,6 +87,7 @@ export function useAttendanceStats(markedRef, studentsRef) {
 export function useAttendanceHistory(fetchFn) {
   const records  = ref([])
   const loading  = ref(false)
+  const error    = ref('')
   const page     = ref(1)
   const lastPage = ref(1)
 
@@ -104,12 +105,13 @@ export function useAttendanceHistory(fetchFn) {
 
   /**
    * Load a specific page of attendance records.
-   * Silently logs errors — the caller can check records.value.length to detect failure.
+   * Sets error.value on failure so templates can surface the problem.
    *
    * @param {number} p - 1-based page number (defaults to 1)
    */
   async function load(p = 1) {
     loading.value = true
+    error.value   = ''
     try {
       const res  = await fetchFn(p)
 
@@ -122,10 +124,11 @@ export function useAttendanceHistory(fetchFn) {
       lastPage.value = body.last_page    ?? 1
     } catch (e) {
       console.error('[useAttendanceHistory] Failed to load attendance:', e)
+      error.value = e.message || 'Failed to load attendance records.'
     } finally {
       loading.value = false
     }
   }
 
-  return { records, loading, page, lastPage, load, presentCount, absentCount, lateCount, pct }
+  return { records, loading, error, page, lastPage, load, presentCount, absentCount, lateCount, pct }
 }
