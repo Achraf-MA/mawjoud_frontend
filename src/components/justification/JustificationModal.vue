@@ -53,11 +53,29 @@ watch(() => props.record, () => {
 
 /**
  * Capture the selected file from the hidden file input.
- * We store it in a ref rather than binding directly to the input
- * so we can display a custom styled drop zone.
+ * Validates type and size (max 2 MB) immediately on selection
+ * so the user gets feedback before attempting to submit.
  */
 function onFileChange(e) {
-  file.value = e.target.files?.[0] ?? null
+  const selected = e.target.files?.[0] ?? null
+  if (!selected) { file.value = null; return }
+
+  const allowed = ['application/pdf', 'image/jpeg', 'image/png']
+  if (!allowed.includes(selected.type)) {
+    error.value = 'Only PDF, JPG, and PNG files are accepted.'
+    file.value  = null
+    e.target.value = ''
+    return
+  }
+  if (selected.size > 2 * 1024 * 1024) {
+    error.value = 'File must be 2 MB or smaller.'
+    file.value  = null
+    e.target.value = ''
+    return
+  }
+
+  error.value = ''
+  file.value  = selected
 }
 
 // ── Submission ────────────────────────────────────────────────────────────────
