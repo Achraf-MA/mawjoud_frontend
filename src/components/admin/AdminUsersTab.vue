@@ -56,9 +56,17 @@ function openModal() {
 }
 
 async function submit() {
-  const base = !form.value.first_name || !form.value.last_name || !form.value.email || !form.value.password || !form.value.role
-  if (base) { error.value = 'All fields are required.'; return }
-  if (form.value.role === 'student' && !form.value.class_id) {
+  const { first_name, last_name, email, password, role, class_id } = form.value
+  if (!first_name || !last_name || !email || !password || !role) {
+    error.value = 'All fields are required.'; return
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    error.value = 'Please enter a valid email address.'; return
+  }
+  if (password.length < 8) {
+    error.value = 'Password must be at least 8 characters.'; return
+  }
+  if (role === 'student' && !class_id) {
     error.value = 'Please select a class for the student.'; return
   }
   saving.value = true; error.value = ''
