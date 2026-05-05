@@ -29,7 +29,7 @@ const component = computed(() => {
 })
 
 const roleLabel = computed(() => {
-  const map = { admin: 'Admin', teacher: 'Teacher', parent: 'Parent', cpe: 'Surveillant', student: 'Student', direction: 'Direction' }
+  const map = { admin: 'Admin', teacher: 'Teacher', parent: 'Parent', cpe: 'Surveillant', student: 'Student' }
   return map[user.value?.role] ?? user.value?.role?.toUpperCase() ?? ''
 })
 </script>
