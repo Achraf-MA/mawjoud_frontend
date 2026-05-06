@@ -130,9 +130,6 @@ onMounted(async () => {
       <!-- One card per status + a justified count to help parents
            track how many absences they have already addressed -->
       <div class="stats-grid">
-        <StatCard :num="att.presentCount.value" label="Present"   color="var(--accent)"
-          fill-class="stat-bar-fill--present"
-          :pct="att.records.value.length ? att.presentCount.value / att.records.value.length * 100 : 0" />
         <StatCard :num="att.absentCount.value"  label="Absent"    color="#b03030"
           fill-class="stat-bar-fill--absent"
           :pct="att.records.value.length ? att.absentCount.value / att.records.value.length * 100 : 0" />
@@ -142,7 +139,25 @@ onMounted(async () => {
         <StatCard :num="justifiedCount"         label="Justified" color="var(--muted)"
           fill-class="stat-bar-fill--muted"
           :pct="att.records.value.length ? justifiedCount / att.records.value.length * 100 : 0" />
-      </div>
+      </div>      
+
+      <!-- ── Per-child attendance sections ── -->
+      <!-- One section per child. ChildAttendanceSection handles the
+           Justify button visibility logic internally. -->
+      <ChildAttendanceSection
+        v-for="(records, studentName) in byStudent"
+        :key="studentName"
+        :studentName="studentName"
+        :records="records"
+        @justify="openJustify"
+      />
+
+      <!-- ── Pagination ── -->
+      <PaginationBar
+        :page="att.page.value"
+        :last-page="att.lastPage.value"
+        @change="att.load"
+      />
 
       <!-- ── Timetable section ── -->
       <!-- Lets parents see the weekly schedule for their children's class,
@@ -169,24 +184,6 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-
-      <!-- ── Per-child attendance sections ── -->
-      <!-- One section per child. ChildAttendanceSection handles the
-           Justify button visibility logic internally. -->
-      <ChildAttendanceSection
-        v-for="(records, studentName) in byStudent"
-        :key="studentName"
-        :studentName="studentName"
-        :records="records"
-        @justify="openJustify"
-      />
-
-      <!-- ── Pagination ── -->
-      <PaginationBar
-        :page="att.page.value"
-        :last-page="att.lastPage.value"
-        @change="att.load"
-      />
 
     </template>
 
