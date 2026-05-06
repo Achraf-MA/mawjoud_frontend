@@ -19,16 +19,20 @@ const BASE = '/api/admin'
 /** @returns {Promise<{ data: User[] }>} */
 export const getUsers = () => apiFetch(`${BASE}/users`)
 
-/**
- * Create a new user. When role is 'student', the payload must also include
- * class_id to create the linked student record in the same request.
- *
- * @param {{ first_name, last_name, email, password, role, class_id? }} data
- */
+/** @param {{ first_name, last_name, email, password, role, class_id? }} data */
 export const createUser = (data) => apiFetch(`${BASE}/users`, {
   method: 'POST',
   body:   JSON.stringify(data),
 })
+
+/** @param {number} id  @param {{ first_name, last_name, email, role, password?, class_id? }} data */
+export const updateUser = (id, data) => apiFetch(`${BASE}/users/${id}`, {
+  method: 'PUT',
+  body:   JSON.stringify(data),
+})
+
+/** @param {number} id */
+export const deleteUser = (id) => apiFetch(`${BASE}/users/${id}`, { method: 'DELETE' })
 
 // ─────────────────────────────────────────────
 // Classes
@@ -43,6 +47,15 @@ export const createClass = (data) => apiFetch(`${BASE}/classes`, {
   body:   JSON.stringify(data),
 })
 
+/** @param {number} id  @param {{ name: string }} data */
+export const updateClass = (id, data) => apiFetch(`${BASE}/classes/${id}`, {
+  method: 'PUT',
+  body:   JSON.stringify(data),
+})
+
+/** @param {number} id */
+export const deleteClass = (id) => apiFetch(`${BASE}/classes/${id}`, { method: 'DELETE' })
+
 // ─────────────────────────────────────────────
 // Subjects
 // ─────────────────────────────────────────────
@@ -55,6 +68,15 @@ export const createSubject = (data) => apiFetch(`${BASE}/subjects`, {
   method: 'POST',
   body:   JSON.stringify(data),
 })
+
+/** @param {number} id  @param {{ name: string }} data */
+export const updateSubject = (id, data) => apiFetch(`${BASE}/subjects/${id}`, {
+  method: 'PUT',
+  body:   JSON.stringify(data),
+})
+
+/** @param {number} id */
+export const deleteSubject = (id) => apiFetch(`${BASE}/subjects/${id}`, { method: 'DELETE' })
 
 // ─────────────────────────────────────────────
 // Students
@@ -76,14 +98,15 @@ export const createStudent = (data) => apiFetch(`${BASE}/students`, {
 /** @returns {Promise<{ data: ParentStudentLink[] }>} */
 export const getParentLinks = () => apiFetch(`${BASE}/parent-student`)
 
-/**
- * Link a parent user to a student record.
- * Creates a row in the parent_student pivot table.
- *
- * @param {{ parent_id: number, student_id: number }} data
- */
+/** @param {{ parent_id: number, student_id: number }} data */
 export const linkParent = (data) => apiFetch(`${BASE}/parent-student`, {
   method: 'POST',
+  body:   JSON.stringify(data),
+})
+
+/** @param {{ parent_id: number, student_id: number }} data */
+export const unlinkParent = (data) => apiFetch(`${BASE}/parent-student`, {
+  method: 'DELETE',
   body:   JSON.stringify(data),
 })
 
@@ -94,13 +117,11 @@ export const linkParent = (data) => apiFetch(`${BASE}/parent-student`, {
 /** @returns {Promise<{ data: Assignment[] }>} */
 export const getAssignments = () => apiFetch(`${BASE}/assignments`)
 
-/**
- * Assign a teacher to teach a specific subject in a specific class.
- * Creates a row in the teacher_class_subject pivot table.
- *
- * @param {{ teacher_id: number, class_id: number, subject_id: number }} data
- */
+/** @param {{ teacher_id: number, class_id: number, subject_id: number }} data */
 export const assignTeacher = (data) => apiFetch(`${BASE}/assignments`, {
   method: 'POST',
   body:   JSON.stringify(data),
 })
+
+/** @param {number} id */
+export const deleteAssignment = (id) => apiFetch(`${BASE}/assignments/${id}`, { method: 'DELETE' })
