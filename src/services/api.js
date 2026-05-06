@@ -15,7 +15,7 @@ if (!import.meta.env.VITE_API_URL && import.meta.env.PROD) {
   console.warn('[api] VITE_API_URL is not set — falling back to localhost:8000. This will not work in production.')
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 // Re-fetch the CSRF cookie after 30 min of idle time so stale sessions don't
 // silently break state-mutating requests (cookie expires with the session).
