@@ -35,7 +35,7 @@ defineProps({
 const emit = defineEmits(['review'])
 
 /** Build the public storage URL for an attached document */
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 /**
  * @param {string|null} path - Relative storage path from the backend
@@ -57,17 +57,17 @@ function fileUrl(path) {
       <div class="student-identity">
         <!-- Avatar derived from student first/last initials -->
         <div class="avatar avatar-md avatar--dim">
-          {{ personInitials(record.attendance?.student?.first_name, record.attendance?.student?.last_name) }}
+          {{ personInitials(record.student_first_name, record.student_last_name) }}
         </div>
         <div class="identity-info">
           <p class="student-name">
-            {{ record.attendance?.student?.first_name }}
-            {{ record.attendance?.student?.last_name }}
+            {{ record.student_first_name }}
+            {{ record.student_last_name }}
           </p>
           <p class="absence-meta">
-            Absent on {{ formatDate(record.attendance?.date) }}
-            <span v-if="record.attendance?.subject?.name">
-              · {{ record.attendance.subject.name }}
+            Absent on {{ formatDate(record?.absent_date) }}
+            <span v-if="record.subject?.name">
+              · {{ record.subject.name }}
             </span>
           </p>
         </div>
